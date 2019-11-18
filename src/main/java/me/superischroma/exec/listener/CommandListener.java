@@ -4,6 +4,9 @@ import me.superischroma.exec.EXEC;
 import me.superischroma.exec.config.ExecutableData;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,17 +31,26 @@ public class CommandListener implements Listener
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e)
     {
-        String command = e.getMessage().split(" ")[0];
+        String commandFull = e.getMessage().split(" ")[0];
         Logger log = EXEC.getPlugin(EXEC.class).getLogger();
         for (String exec : edata.getKeys(false))
         {
-            if (command.equalsIgnoreCase("/" + exec))
+            if (commandFull.equalsIgnoreCase("/" + exec))
             {
                 e.setCancelled(true);
                 for (String ins : edata.getStringList(exec + ".instructions"))
                 {
                     String[] informationDetails = ins.split(" ");
-                    if (informationDetails[0].equals("vector"))
+                    for (int i = 0; i < informationDetails.length; i++)
+                    {
+                        informationDetails[i] = informationDetails[i].replace("senderx", String.valueOf(e.getPlayer().getLocation().getBlockX()))
+                                .replace("sendery", String.valueOf(e.getPlayer().getLocation().getBlockY()))
+                                .replace("senderz", String.valueOf(e.getPlayer().getLocation().getBlockZ()))
+                                .replace("sendername", e.getPlayer().getName())
+                                .replace("senderdisplayname", e.getPlayer().getDisplayName());
+                    }
+                    String command = informationDetails[0];
+                    if (command.equals("vector"))
                     {
                         int x = Integer.valueOf(informationDetails[2]);
                         int y = Integer.valueOf(informationDetails[3]);
@@ -57,15 +69,31 @@ public class CommandListener implements Listener
                         else
                             player.setVelocity(player.getVelocity().clone().add(new Vector(x, y, z)));
                     }
-                    if (informationDetails[0].equals("chat"))
+                    if (command.equals("chat"))
                     {
                         String chat = StringUtils.join(informationDetails, " ", 1, informationDetails.length);
+                        chat = ChatColor.translateAlternateColorCodes('&', chat);
                         Bukkit.broadcastMessage(chat);
+                    }
+                    if (command.equals("lightning"))
+                    {
+                        int x = Integer.valueOf(informationDetails[1]);
+                        int y = Integer.valueOf(informationDetails[2]);
+                        int z = Integer.valueOf(informationDetails[3]);
+                        World world = Bukkit.getWorld(informationDetails[4]);
+                        world.strikeLightning(new Location(world, x, y, z));
+                    }
+                    if (command.equals("explosion"))
+                    {
+                        int x = Integer.valueOf(informationDetails[1]);
+                        int y = Integer.valueOf(informationDetails[2]);
+                        int z = Integer.valueOf(informationDetails[3]);
+                        World world = Bukkit.getWorld(informationDetails[4]);
+                        int power = Integer.valueOf(informationDetails[5]);
+                        world.createExplosion(new Location(world, x, y, z), power);
                     }
                 }
             }
         }
     }
 }
-
-// vector <power> <x> <y> <z> <player> [wait]

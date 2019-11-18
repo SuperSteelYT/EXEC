@@ -4,6 +4,7 @@ import me.superischroma.exec.config.ExecutableData;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -17,12 +18,32 @@ public class Command_addinstruction implements CommandExecutor
         if (args.length == 0)
             return false;
         String information = "";
-        if (args.length >= 2)
+        if (args.length == 6)
         {
-            if (args[1].equalsIgnoreCase("chat"))
+            if (args[1].equalsIgnoreCase("lightning"))
             {
-                String chat = StringUtils.join(args, " ", 2, args.length);
-                information = "chat " + chat;
+                String x = args[2];
+                String y = args[3];
+                String z = args[4];
+                World world = Bukkit.getWorld(args[5]);
+                information = "lightning " + x + " " + y + " " + z + " " + world.getName();
+            }
+        }
+        if (args.length == 7)
+        {
+            if (args[1].equalsIgnoreCase("explosion"))
+            {
+                String x = args[2];
+                String y = args[3];
+                String z = args[4];
+                World world = Bukkit.getWorld(args[5]);
+                if (world == null)
+                {
+                    sender.sendMessage(ChatColor.RED + "Failed to find that world.");
+                    return true;
+                }
+                int power = Integer.valueOf(args[6]);
+                information = "explosion " + x + " " + y + " " + z + " " + world.getName() + " " + power;
             }
         }
         if (args.length >= 5 && args.length <= 6)
@@ -63,6 +84,14 @@ public class Command_addinstruction implements CommandExecutor
                     sender.sendMessage(ChatColor.GRAY + "Player not found.");
                     return true;
                 }
+            }
+        }
+        if (args.length >= 2)
+        {
+            if (args[1].equalsIgnoreCase("chat"))
+            {
+                String chat = StringUtils.join(args, " ", 2, args.length);
+                information = "chat " + chat;
             }
         }
         sender.sendMessage(ChatColor.GRAY + "Added a " + args[1] + " instruction to \"" + args[0] + "\"");

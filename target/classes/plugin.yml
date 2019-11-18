@@ -1,7 +1,7 @@
 name: EXEC
 author: super
 main: me.superischroma.exec.EXEC
-version: 0.0.1
+version: 0.0.2
 api-version: 1.13
 commands:
   executable:

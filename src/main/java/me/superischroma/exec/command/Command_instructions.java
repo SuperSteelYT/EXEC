@@ -16,16 +16,16 @@ public class Command_instructions implements CommandExecutor
     public boolean onCommand(CommandSender sender, Command cmd, String c, String[] args)
     {
         ExecutableData edata = ExecutableData.getConfig();
-        if (args.length == 1)
-        {
-            if (args[0].equalsIgnoreCase("list"))
-            {
-                sender.sendMessage(ChatColor.GRAY + "List of usable instructions:");
-                sender.sendMessage(ChatColor.GRAY + " - vector <power> <direction> <player>");
-                sender.sendMessage(ChatColor.GRAY + " - chat <message>");
-                return true;
-            }
+        if (args.length != 1)
             return false;
+        if (args[0].equalsIgnoreCase("list"))
+        {
+            sender.sendMessage(ChatColor.GRAY + "List of usable instructions:");
+            sender.sendMessage(ChatColor.GRAY + " - vector <power> <direction> <player>");
+            sender.sendMessage(ChatColor.GRAY + " - chat <message>");
+            sender.sendMessage(ChatColor.GRAY + " - lightning <x> <y> <z> <world>");
+            sender.sendMessage(ChatColor.GRAY + " - explosion <x> <y> <z> <world> <power>");
+            return true;
         }
         String statement = args[0];
         List<String> instructions = edata.getStringList(statement + ".instructions");
